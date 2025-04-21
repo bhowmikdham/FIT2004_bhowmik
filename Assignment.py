@@ -28,6 +28,8 @@ When finding an optimal intercept , we will take care of these things:
 If no such state exists where the driver and friend align on both time and location, the function returns None.
 
 '''
+import heapq
+import math 
 def compute_time(stations, start_idx):
     '''
     Compute total_loop_time and list_arrival containing the time at when the friend first arrives at a station based on where he starts from.
@@ -55,7 +57,7 @@ def compute_time(stations, start_idx):
 
     return total_loop_time,list_arrival
 
-def graph(roads,stations):
+def graphing(roads,stations):
     '''
     
     '''
@@ -70,12 +72,68 @@ def graph(roads,stations):
     for initial_location, next_location, cost, travel_time in roads:
         graph[initial_location].append((next_location, cost, travel_time))
 
-    #here we are just making an array that corresponds to the the station
+    #here we are just making an array that corresponds to the the stations in the graph drafted above
     loc_to_station = [-1] * (max_node + 1)
     for idx, (station_loc, _) in enumerate(stations):
         loc_to_station[station_loc] = idx
 
     return graph, loc_to_station
 
-def intercept()
+def intercept(roads,stations,initial_location,friend_start):
+    '''
     
+    '''
+
+    #Compute time loop of friend using the compute_time fuction
+    total_loop_time, arrival_times = compute_time(stations, loc_to_station[friend_start])
+
+    #here we will build the graph
+    graph, loc_to_station = graphing(roads, stations)
+    if loc_to_station[friend_start] < 0:#checks if the start mentioned as an argument is a station or not [if not return none]
+        return None
+
+    #Dijkstra's implementaion 
+    num_locations = len(graph)
+    INF = math.inf
+    cost_table = [[INF] * total_loop_time for _ in range(num_locations)]
+    time_table = [[INF] * total_loop_time for _ in range(num_locations)]
+    prev_node = [[-1] * total_loop_time for _ in range(num_locations)]
+    prev_time_mod = [[-1] * total_loop_time for _ in range(num_locations)]
+
+    # Min-heap: (cost, time, location, time_mod)
+    heap = []
+    cost_table[initial_location][0] = 0
+    time_table[initial_location][0] = 0
+    heapq.heappush(heap, (0, 0, initial_location, 0))
+
+    while heap:
+        current_cost, current_time, current_loc, time_mod = heapq.heappop(heap)
+        if current_cost != cost_table[current_loc][time_mod] or current_time != time_table[current_loc][time_mod]:
+            continue
+        
+        station_idx = loc_to_station[current_loc]
+        if station_idx >= 0 and current_time % total_loop_time == arrival_times[station_idx]:#this si where we are checking the intercept
+        
+            path = []
+            loc, mod = current_loc, time_mod
+            while loc >= 0:
+                path.append(loc)
+                next_loc = prev_node[loc][mod]
+                mod = prev_time_mod[loc][mod]
+                loc = next_loc
+            return current_cost, current_time, list(reversed(path)) #why reversed ? this is herew to backtrack the route so that we can display the route
+
+        
+        for neighbor, edge_cost, edge_time in graph[current_loc]:
+            new_cost = current_cost + edge_cost
+            new_time = current_time + edge_time
+            new_mod = (time_mod + edge_time) % total_loop_time
+            if (new_cost < cost_table[neighbor][new_mod] or
+               (new_cost == cost_table[neighbor][new_mod] and new_time < time_table[neighbor][new_mod])):#this is here if we found another better path we will basically update it.
+                cost_table[neighbor][new_mod] = new_cost
+                time_table[neighbor][new_mod] = new_time
+                prev_node[neighbor][new_mod] = current_loc
+                prev_time_mod[neighbor][new_mod] = time_mod
+                heapq.heappush(heap, (new_cost, new_time, neighbor, new_mod))
+
+    return None
