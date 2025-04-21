@@ -28,3 +28,32 @@ When finding an optimal intercept , we will take care of these things:
 If no such state exists where the driver and friend align on both time and location, the function returns None.
 
 '''
+def compute_time(stations, start_idx):
+    '''
+    Compute total_loop_time and list_arrival containing the time at when the friend first arrives at a station based on where he starts from.
+
+    stations: list of (location , travel_time)
+    start_idx: index in stations where friend starts
+
+    Returns:
+        total_loop_time, list_arrival
+    '''
+    #computing total_loop_time
+    
+    travel_times= [time for _,time in stations]
+    total_loop_time=sum(travel_times) #O(n) #this is the time that we will be using as a mod divisor
+    
+    #computing time to each station 
+    n=len(stations)
+    list_arrival=[]
+    for time in range(len(stations)):
+        time_to_station=0
+        for j in range(time):
+            index=(start_idx+j)%n
+            time_to_station += travel_times[idx]
+        list_arrival.append(time_to_station)
+
+    return total_loop_time,list_arrival
+
+def graph()
+    
