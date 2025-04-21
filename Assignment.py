@@ -55,5 +55,27 @@ def compute_time(stations, start_idx):
 
     return total_loop_time,list_arrival
 
-def graph()
+def graph(roads,stations):
+    '''
+    
+    '''
+    #for the graph handling we will be makign use of adjacency list which would help in tracking of all the nodes when we pass it to the dijkstras
+    max_road_node = max(max(initial_location, next_location) for initial_location, next_location, _, _ in roads)
+    max_station_node = max(station_loc for station_loc, _ in stations)
+    max_node = max(max_road_node, max_station_node)
+
+    graph = [[] for _ in range(max_node + 1)]
+
+    #here we are populating the road edges
+    for initial_location, next_location, cost, travel_time in roads:
+        graph[initial_location].append((next_location, cost, travel_time))
+
+    #here we are just making an array that corresponds to the the station
+    loc_to_station = [-1] * (max_node + 1)
+    for idx, (station_loc, _) in enumerate(stations):
+        loc_to_station[station_loc] = idx
+
+    return graph, loc_to_station
+
+def intercept()
     
