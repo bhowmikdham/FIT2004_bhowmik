@@ -132,6 +132,7 @@ def intercept(roads,stations,initial_location,friend_start):
     #Dijkstra's implementaion 
     num_locations = len(graph)
     INF = math.inf
+    #We have used INF to represent unreachability, as we don’t yet know how many nodes can be reached from the starting node.
     cost_table = [[INF] * total_loop_time for _ in range(num_locations)]
     time_table = [[INF] * total_loop_time for _ in range(num_locations)]
     prev_node = [[-1] * total_loop_time for _ in range(num_locations)]
